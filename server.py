@@ -20,8 +20,33 @@ class Koordinat(BaseModel):
     lat: float
     lon: float
 
+# ... eski importlar ...
+
 class RotaIstegi(BaseModel):
     rota_noktalari: List[Koordinat]
+    arac_sinifi: str  # YENİ: "sinif_1", "sinif_2" gibi gelecek
+
+@app.post("/hesapla")
+def ucret_hesapla(istek: RotaIstegi):
+    # ... geofencing kodları aynı ...
+    
+    if len(temas_edilen_giseler) >= 2:
+        # ... sıralama kodları aynı ...
+        
+        try:
+            # Fiyatı hem gişeye hem de seçilen sınıfa göre bul
+            gise_verisi = fiyat_matrisi.get(giris, {}).get(cikis)
+            if not gise_verisi:
+                gise_verisi = fiyat_matrisi.get(cikis, {}).get(giris)
+            
+            if gise_verisi:
+                ucret = gise_verisi.get(istek.arac_sinifi) # Sınıfı buradan çekiyoruz
+                if ucret:
+                    return {"durum": "basarili", "giris": giris, "cikis": cikis, "tutar": ucret, "sinif": istek.arac_sinifi}
+            
+            return {"durum": "hata", "mesaj": "Bu araç sınıfı için fiyat bulunamadı."}
+        except Exception as e:
+            return {"durum": "hata", "mesaj": str(e)}
 
 # BAŞLANGIÇTA VERİTABANLARINI YÜKLE (IN-MEMORY)
 with open("giseler.json", "r", encoding="utf-8") as f:
