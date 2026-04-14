@@ -53,12 +53,13 @@ def ucret_hesapla(istek: RotaIstegi):
             giris = temas_edilen_giseler[0][1]
             cikis = temas_edilen_giseler[-1][1]
             
-            # Fiyat Matrisi Sorgusu
+        # Fiyat Matrisi Sorgusu
             gise_verisi = fiyat_matrisi.get(giris, {}).get(cikis)
             if not gise_verisi:
                 gise_verisi = fiyat_matrisi.get(cikis, {}).get(giris)
             
-            if gise_verisi:
+            # BURASI KRİTİK: gise_verisi artık bir sayı değil, bir sözlük olmalı
+            if gise_verisi and isinstance(gise_verisi, dict):
                 ucret = gise_verisi.get(istek.arac_sinifi)
                 if ucret:
                     return {
