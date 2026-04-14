@@ -3,3 +3,4 @@ uvicorn
 shapely
 pydantic
 python-multipart
+gunicorn
