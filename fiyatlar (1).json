@@ -1,0 +1,54 @@
+{
+    "ANADOLU (ÇAMLICA)": {
+        "AKINCI": {
+            "sinif_1": 338.0,
+            "sinif_2": 440.0,
+            "sinif_3": 520.0,
+            "sinif_4": 690.0,
+            "sinif_5": 870.0,
+            "sinif_6": 120.0
+        },
+        "GEBZE": {
+            "sinif_1": 45.0,
+            "sinif_2": 60.0,
+            "sinif_3": 75.0,
+            "sinif_4": 100.0,
+            "sinif_5": 125.0,
+            "sinif_6": 15.0
+        },
+        "KÖRFEZ": {
+            "sinif_1": 70.0,
+            "sinif_2": 95.0,
+            "sinif_3": 115.0,
+            "sinif_4": 150.0,
+            "sinif_5": 190.0,
+            "sinif_6": 25.0
+        },
+        "ADAPAZARI": {
+            "sinif_1": 115.0,
+            "sinif_2": 150.0,
+            "sinif_3": 180.0,
+            "sinif_4": 240.0,
+            "sinif_5": 300.0,
+            "sinif_6": 40.0
+        },
+        "BOLU BATI": {
+            "sinif_1": 215.0,
+            "sinif_2": 280.0,
+            "sinif_3": 340.0,
+            "sinif_4": 450.0,
+            "sinif_5": 565.0,
+            "sinif_6": 75.0
+        }
+    },
+    "GEBZE": {
+        "AKINCI": {
+            "sinif_1": 293.0,
+            "sinif_2": 380.0,
+            "sinif_3": 465.0,
+            "sinif_4": 615.0,
+            "sinif_5": 775.0,
+            "sinif_6": 105.0
+        }
+    }
+}
