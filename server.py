@@ -70,4 +70,7 @@ def ucret_hesapla(istek: RotaIstegi):
         return {"durum": "hata", "mesaj": "Rota üzerinde gişe tespit edilmedi."}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    import os
+    # Render'ın verdiği portu al, yoksa 8000 kullan
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
