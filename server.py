@@ -9,6 +9,7 @@ import os
 
 app = FastAPI()
 
+# CORS Ayarları
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], 
@@ -16,86 +17,65 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Veri Modelleri
 class Koordinat(BaseModel):
     lat: float
     lon: float
 
-# ... eski importlar ...
-
 class RotaIstegi(BaseModel):
     rota_noktalari: List[Koordinat]
-    arac_sinifi: str  # YENİ: "sinif_1", "sinif_2" gibi gelecek
+    arac_sinifi: str
 
-@app.post("/hesapla")
-def ucret_hesapla(istek: RotaIstegi):
-    # ... geofencing kodları aynı ...
-    
-    if len(temas_edilen_giseler) >= 2:
-        # ... sıralama kodları aynı ...
-        
-        try:
-            # Fiyatı hem gişeye hem de seçilen sınıfa göre bul
-            gise_verisi = fiyat_matrisi.get(giris, {}).get(cikis)
-            if not gise_verisi:
-                gise_verisi = fiyat_matrisi.get(cikis, {}).get(giris)
-            
-            if gise_verisi:
-                ucret = gise_verisi.get(istek.arac_sinifi) # Sınıfı buradan çekiyoruz
-                if ucret:
-                    return {"durum": "basarili", "giris": giris, "cikis": cikis, "tutar": ucret, "sinif": istek.arac_sinifi}
-            
-            return {"durum": "hata", "mesaj": "Bu araç sınıfı için fiyat bulunamadı."}
-        except Exception as e:
-            return {"durum": "hata", "mesaj": str(e)}
-
-# BAŞLANGIÇTA VERİTABANLARINI YÜKLE (IN-MEMORY)
+# Veritabanlarını Yükle
 with open("giseler.json", "r", encoding="utf-8") as f:
-    tum_giseler = json.load(f)
-    # Geofencing motoru için düz bir sözlük oluşturuyoruz
-    giseler_db = tum_giseler["Anadolu_Otoyolu"]
+    giseler_db = json.load(f)["Anadolu_Otoyolu"]
 
 with open("fiyatlar.json", "r", encoding="utf-8") as f:
     fiyat_matrisi = json.load(f)
 
 @app.post("/hesapla")
 def ucret_hesapla(istek: RotaIstegi):
-    rota_cizgisi = LineString([(nokta.lon, nokta.lat) for nokta in istek.rota_noktalari])
-    temas_edilen_giseler = []
-    TOLERANS = 0.001 
+    try:
+        # Rota Çizgisi Oluştur
+        rota_cizgisi = LineString([(n.lon, n.lat) for n in istek.rota_noktalari])
+        temas_edilen_giseler = []
+        TOLERANS = 0.001 
 
-    # Geofencing: 34 Gişenin tamamını tarar
-    for gise_adi, koordinat in giseler_db.items():
-        lat, lon = koordinat
-        gise_noktasi = Point(lon, lat)
-        if rota_cizgisi.intersects(gise_noktasi.buffer(TOLERANS)):
-            mesafe_sirasi = rota_cizgisi.project(gise_noktasi)
-            temas_edilen_giseler.append((mesafe_sirasi, gise_adi))
+        # Geofencing Taraması
+        for gise_adi, koordinat in giseler_db.items():
+            gise_noktasi = Point(koordinat[1], koordinat[0])
+            if rota_cizgisi.intersects(gise_noktasi.buffer(TOLERANS)):
+                mesafe_sirasi = rota_cizgisi.project(gise_noktasi)
+                temas_edilen_giseler.append((mesafe_sirasi, gise_adi))
 
-    if len(temas_edilen_giseler) >= 2:
-        temas_edilen_giseler.sort()
-        giris = temas_edilen_giseler[0][1]
-        cikis = temas_edilen_giseler[-1][1]
+        if len(temas_edilen_giseler) >= 2:
+            temas_edilen_giseler.sort()
+            giris = temas_edilen_giseler[0][1]
+            cikis = temas_edilen_giseler[-1][1]
+            
+            # Fiyat Matrisi Sorgusu
+            gise_verisi = fiyat_matrisi.get(giris, {}).get(cikis)
+            if not gise_verisi:
+                gise_verisi = fiyat_matrisi.get(cikis, {}).get(giris)
+            
+            if gise_verisi:
+                ucret = gise_verisi.get(istek.arac_sinifi)
+                if ucret:
+                    return {
+                        "durum": "basarili", 
+                        "giris": giris, 
+                        "cikis": cikis, 
+                        "tutar": ucret, 
+                        "sinif": istek.arac_sinifi
+                    }
+            
+            return {"durum": "hata", "mesaj": f"Fiyat bulunamadı: {giris} - {cikis}"}
         
-        # Hata Ayıklama (Loglama) İçin
-        print(f"Giriş: {giris}, Çıkış: {cikis}")
-        
-        try:
-            # Önce A'dan B'ye bak, yoksa B'den A'ya bak (Dönüş yolu matrisi için)
-            ucret = fiyat_matrisi.get(giris, {}).get(cikis)
-            if ucret is None:
-                ucret = fiyat_matrisi.get(cikis, {}).get(giris)
-                
-            if ucret is not None:
-                return {"durum": "basarili", "giris": giris, "cikis": cikis, "tutar": ucret}
-            else:
-                return {"durum": "hata", "mesaj": f"Gişeler tespit edildi ({giris} -> {cikis}) ancak fiyat veritabanında yok."}
-        except Exception as e:
-            return {"durum": "hata", "mesaj": "Sistem hatası: Fiyat hesaplanamadı."}
-    else:
         return {"durum": "hata", "mesaj": "Rota üzerinde gişe tespit edilmedi."}
 
+    except Exception as e:
+        return {"durum": "hata", "mesaj": f"Sistem Hatası: {str(e)}"}
+
 if __name__ == "__main__":
-    import os
-    # Render'ın verdiği portu al, yoksa 8000 kullan
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
