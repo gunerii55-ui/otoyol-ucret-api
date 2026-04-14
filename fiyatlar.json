@@ -1,8 +1,4 @@
-import json
 
-# Gerçek KGM 2024-2025 (Yaklaşık) Anadolu Otoyolu Matrisi
-# Not: Botu yazana kadar ana arterleri buraya mühürlüyoruz.
-fiyatlar_db = {
     "ANADOLU (ÇAMLICA)": {
         "AKINCI": {"sinif_1": 338.0, "sinif_2": 440.0, "sinif_3": 520.0, "sinif_4": 690.0, "sinif_5": 870.0, "sinif_6": 120.0},
         "GEBZE": {"sinif_1": 45.0, "sinif_2": 60.0, "sinif_3": 75.0, "sinif_4": 100.0, "sinif_5": 125.0, "sinif_6": 15.0},
@@ -22,8 +18,3 @@ fiyatlar_db = {
         "AKINCI": {"sinif_1": 223.0, "sinif_2": 290.0, "sinif_3": 355.0, "sinif_4": 470.0, "sinif_5": 590.0, "sinif_6": 80.0}
     }
 }
-
-with open("fiyatlar.json", "w", encoding="utf-8") as f:
-    json.dump(fiyatlar_db, f, ensure_ascii=False, indent=4)
-
-print("MÜJDE: Anadolu Otoyolu ana arter fiyatları mühürlendi! GitHub'a yükle ve test et.")
