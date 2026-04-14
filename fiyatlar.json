@@ -1,12 +1,20 @@
 {
     "ANADOLU (ÇAMLICA)": {
-        "AKINCI": 338.0,
-        "GEBZE": 45.0,
-        "DÜZCE (GÖLYAKA)": 150.0,
-        "BOLU BATI": 210.0
-    },
-    "GEBZE": {
-        "AKINCI": 290.0,
-        "BOLU BATI": 170.0
+        "AKINCI": {
+            "sinif_1": 338.00,
+            "sinif_2": 440.00,
+            "sinif_3": 520.00,
+            "sinif_4": 690.00,
+            "sinif_5": 870.00,
+            "sinif_6": 120.00
+        },
+        "GEBZE": {
+            "sinif_1": 45.00,
+            "sinif_2": 60.00,
+            "sinif_3": 75.00,
+            "sinif_4": 100.00,
+            "sinif_5": 125.00,
+            "sinif_6": 15.00
+        }
     }
 }
