@@ -1,0 +1,12 @@
+{
+    "ANADOLU (ÇAMLICA)": {
+        "AKINCI": 338.0,
+        "GEBZE": 45.0,
+        "DÜZCE (GÖLYAKA)": 150.0,
+        "BOLU BATI": 210.0
+    },
+    "GEBZE": {
+        "AKINCI": 290.0,
+        "BOLU BATI": 170.0
+    }
+}
